@@ -1,0 +1,29 @@
+name: Build Copilot CN
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run extract
+        run: python extract.py --plugin-url ${{ github.event.release.assets[0].browser_download_url }}
+
+      - name: Run replace
+        run: python replace.py --version ${{ github.event.release.tag_name }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Copilot-CN
+          path: output/*
